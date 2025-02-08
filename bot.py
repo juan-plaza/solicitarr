@@ -105,12 +105,16 @@ async def on_ready():
     print(f"We have logged in as {bot.user}")
 
 async def build_and_send_message(movies: dict, interaction):
-    await interaction.response.defer(thinking=True)
+    await interaction.response.defer()
 
     now = format_current_datetime_with_suffix()
 
+    file_path = "assets/tmdb-logo.png"  # Adjust path based on your Docker setup
+
     # Send a separate message for each movie
     for movie in movies:
+        file = discord.File(file_path, filename="tmdb-logo.png")
+
         embed = discord.Embed(
             title=movie["title"],
             description=movie["overview"],
@@ -131,11 +135,10 @@ async def build_and_send_message(movies: dict, interaction):
 
         embed.set_footer(
             text=f"Fetched from The Movie Database (TMDB): {now}",
-            icon_url="https://juanplaza.dev/images/tmdb-logo.jpg"
+            icon_url="attachment://tmdb-logo.png"
         )
 
-        await interaction.channel.send(embed=embed)
-
+        await interaction.followup.send(embed=embed, file=file)
 
 def get_movies(endpoint: str) -> dict:
     try:
